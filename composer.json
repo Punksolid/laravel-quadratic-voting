@@ -1,0 +1,24 @@
+{
+    "name": "punksolid/laravel-quadratic-voting",
+    "description": "Voting system implementation for laravel. Quatratic Voting, not simple.",
+    "type": "library",
+    "require": {
+        "laravel/laravel": "^5.7"
+    },
+    "require-dev": {
+        "orchestra/testbench": "~3.7"
+    },
+    "authors": [
+        {
+            "name": "Jose Palazuelos",
+            "email": "punksolid@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Punksolid\\LaravelQuadraticVoting\\LaravelQuadraticVotingProvider"
+            ]
+        }
+    }
+}
