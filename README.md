@@ -1,6 +1,11 @@
 # laravel-quadratic-voting
 Quadratic Voting Implementation library to Laravel. 
 
+Installation
+```
+composer require punksolid/laravel-quadratic-voting
+```
+
 ```php
 <?php 
 
@@ -28,6 +33,7 @@ class Idea extends Model
 
 
 ```
+Basic Usage
 
 To vote on something you just need to
 ```php
@@ -38,6 +44,7 @@ $idea = factory(Idea::class)->create();
 //the number of the credits, it will proccess the credits to votes.
 //For example if a voter puts, 9 vote credits to an isVotable model, it will count as 3 votes
 $user->voteOn($idea, $vote_credits);
+```
 
 Methods available on voter
 ```php
