@@ -1,7 +1,6 @@
 <?php
 
 namespace Punksolid\LaravelQuadraticVoting;
-//namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +13,7 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/migrations/');
+        $this->loadMigrationsFrom($this->getBaseDir('database/migrations'));
     }
 
     /**
@@ -25,5 +24,19 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
     public function register()
     {
 
+    }
+
+    /**
+     * @param string $directory
+     *
+     * @return string
+     */
+    private function getBaseDir($directory): string
+    {
+        return sprintf(
+            '%s/../%s',
+            __DIR__,
+            $directory
+        );
     }
 }

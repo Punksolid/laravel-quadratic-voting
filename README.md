@@ -9,12 +9,11 @@ composer require punksolid/laravel-quadratic-voting
 ```php
 <?php 
 
- //User.php
- //Add the Voter trait 
- use Punksolid\LaravelQuadraticVoting\Voter;
+ //Add the Voter trait and the VoterInterface for relationships
+ use Punksolid\LaravelQuadraticVoting\Traits\Voter;
+ use Punksolid\LaravelQuadraticVoting\VoterInterface;
  
- 
- class User extends Authenticatable
+ class User extends Authenticatable implements VoterInterface
  {
      use Voter;
  
@@ -24,7 +23,7 @@ composer require punksolid/laravel-quadratic-voting
 <?php
 
 //On the models that are going to be votable add the following
-use Punksolid\LaravelQuadraticVoting\isVotable;
+use Punksolid\LaravelQuadraticVoting\Traits\isVotable;
 
 //for example
 class Idea extends Model
@@ -49,7 +48,7 @@ $user->voteOn($idea, $vote_credits);
 Methods available on voter
 ```php
       //ask if it has enough credits to spend
-    $voter->hasCredits($wanna_spend) //boolean
+    $voter->hasCredits($wanna_spend); //boolean
     //add credits to a voter
     $voter->giveVoteCredits();
     
@@ -57,7 +56,7 @@ Methods available on voter
     $voter->getVoteCredits();
     
     //Give voters and assign equally/massively credits
-    VoterModel::massiveVoteCredits($voter_collection, $credits);
+    VoterInterface::massiveVoteCredits($voter_collection, $credits);
     
     //You should not spend credits without voting, but in case you need
     //decrease the available credits to the user
@@ -67,7 +66,7 @@ Methods available on voter
 On the Votable model object is 
 ```php
 //gets all the votes
-$idea->getCountVotes()
+$idea->getCountVotes();
 
 //Return a collection of all the voters
 $idea->getVoters();

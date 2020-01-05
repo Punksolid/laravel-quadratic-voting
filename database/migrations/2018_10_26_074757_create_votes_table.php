@@ -21,7 +21,6 @@ class CreateVotesTable extends Migration
             $table->integer("votable_id")->index()->nullable();
             $table->string("votable_type")->index()->nullable();
             $table->integer('quantity')->nullable();
-//            $table->morphs("votable");
             $table->timestamps();
         });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Punksolid\LaravelQuadraticVoting\Tests;
 
 use App\Article;
 use App\Idea;

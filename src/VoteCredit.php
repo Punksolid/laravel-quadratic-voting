@@ -2,21 +2,21 @@
 
 namespace Punksolid\LaravelQuadraticVoting;
 
-//use Illuminate\Database\Eloquent\Relations\Pivot;
-
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VoteCredit extends Model
 {
+    /** @var string */
     protected $table = 'vote_bag';
 
+    /** @var array<string> */
     protected $fillable = [
-      'credits'
+      'credits',
     ];
 
-    public function voter()
+    public function voter(): BelongsTo
     {
-        //@Todo change User::class for the real voter class
-        return $this->belongsTo(User::class, 'voter_id');
+        return $this->belongsTo(VoterInterface::class, 'voter_id');
     }
 }
