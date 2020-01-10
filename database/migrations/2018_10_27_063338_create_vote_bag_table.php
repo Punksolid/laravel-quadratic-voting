@@ -13,9 +13,12 @@ class CreateVoteBagTable extends Migration
      */
     public function up()
     {
-        Schema::create('vote_bag', function (Blueprint $table){
+        $tableNames = config('laravel_quadratic.table_names');
+        $columnNames = config('laravel_quadratic.column_names');
+
+        Schema::create($tableNames['vote_credits'], function (Blueprint $table) use ($columnNames) {
             $table->increments('id');
-            $table->integer('voter_id');
+            $table->integer($columnNames['voter_key']);
             $table->integer('credits')->default(0);
             $table->timestamps();
         });
@@ -28,6 +31,8 @@ class CreateVoteBagTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vote_bag');
+        $tableNames = config('laravel_quadratic.table_names');
+
+        Schema::dropIfExists($tableNames['vote_credits']);
     }
 }

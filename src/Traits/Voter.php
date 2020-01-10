@@ -10,29 +10,32 @@ namespace Punksolid\LaravelQuadraticVoting;
 
 
 use App\Idea;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Punksolid\LaravelQuadraticVoting\Interfaces\IsVotableInterface;
 use Punksolid\LaravelQuadraticVoting\Models\VoteCredit;
 
 trait Voter
 {
-    public function voteOn(Model $model, int $vote_credits = 1): bool
+    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): bool
     {
         if (!$this->hasCredits($vote_credits)) {
             return false;
         }
 
-        $votes_already_emitted = $this->ideas()->groupBy('voter_id')->get()->sum('credits');
+        $votes_already_emitted = $this->ideas()
+            ->groupBy(
+                config('laravel_quadratic.column_names.voter_key')
+            )->get()
+            ->sum('credits');
         $this->ideas()->detach();
         $votes_credits_already_emitted = pow($votes_already_emitted, 2);
         $total_vote_credits = $vote_credits + $votes_credits_already_emitted;
         $votes_quantity = sqrt($total_vote_credits); //new
 
-
         $this->ideas()->attach($model->id, [
-            "voter_id" => $this->id,
+            config('laravel_quadratic.column_names.voter_key') => $this->id,
             "votable_type" => get_class($model),
             "votable_id" => $model->id,
             "quantity" => $votes_quantity
@@ -70,7 +73,7 @@ trait Voter
 
     public function ideas(): BelongsToMany
     {
-        return $this->belongsToMany(Idea::class, "votes", "voter_id", "votable_id")
+        return $this->belongsToMany(Idea::class, "votes", config('laravel_quadratic.column_names.voter_key'), "votable_id")
             ->withPivot([
                 "votable_type",
                 "votable_id",
@@ -80,7 +83,7 @@ trait Voter
 
     public function voteCredits(): HasOne
     {
-        return $this->hasOne(VoteCredit::class, 'voter_id');
+        return $this->hasOne(VoteCredit::class, config('laravel_quadratic.column_names.voter_key'));
     }
 
     public function giveVoteCredits(int $vote_credits = 1): VoteCredit

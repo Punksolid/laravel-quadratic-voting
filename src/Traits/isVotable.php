@@ -9,19 +9,20 @@
 namespace Punksolid\LaravelQuadraticVoting\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Collection;
+use Punksolid\LaravelQuadraticVoting\Interfaces\VoterInterface;
 
 trait isVotable
 {
     public function voters(): BelongsToMany
     {
-        return $this->belongsToMany(
-            User::class,
-            "votes",
-            'votable_id',
-            'voter_id')
-            ->withPivot([
+        return $this
+            ->belongsToMany(
+                VoterInterface::class,
+                "votes",
+                'votable_id',
+                config('laravel_quadratic.column_names.voter_key')
+            )->withPivot([
                 "votable_type",
                 "votable_id",
                 "quantity"
@@ -37,7 +38,9 @@ trait isVotable
     {
         return $this
             ->voters()
-            ->groupBy('voter_id')
+            ->groupBy(
+                config('laravel_quadratic.column_names.voter_key')
+            )
             ->get();
     }
 }
