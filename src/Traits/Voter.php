@@ -11,14 +11,14 @@ namespace Punksolid\LaravelQuadraticVoting;
 
 use App\Idea;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Punksolid\LaravelQuadraticVoting\Models\VoteCredit;
 
 trait Voter
 {
-    /**
-     *
-     */
-    public function voteOn(Model $model, $vote_credits = 1)
+    public function voteOn(Model $model, int $vote_credits = 1): bool
     {
         if (!$this->hasCredits($vote_credits)) {
             return false;
@@ -44,20 +44,18 @@ trait Voter
 
     }
 
-    public function hasCredits($wanna_spend): bool
+    public function hasCredits(int $wanna_spend): bool
     {
         $vote_bag = $this->voteCredits()->first();
-        if (!$vote_bag) {
-            return false;
-        } elseif ($vote_bag->credits >= $wanna_spend) {
+        if ($vote_bag && $vote_bag->credits >= $wanna_spend) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 
-    public function spendCredits($credits): int
+    public function spendCredits(int $credits): int
     {
         $voter_bag = $this->voteCredits()->first();
         if ($voter_bag) {
@@ -70,9 +68,8 @@ trait Voter
         return 0;
     }
 
-    public function ideas()
+    public function ideas(): BelongsToMany
     {
-        //todo aqui
         return $this->belongsToMany(Idea::class, "votes", "voter_id", "votable_id")
             ->withPivot([
                 "votable_type",
@@ -81,18 +78,14 @@ trait Voter
             ])->withTimestamps();
     }
 
-    public function voteCredits()
+    public function voteCredits(): HasOne
     {
         return $this->hasOne(VoteCredit::class, 'voter_id');
     }
 
-    /**
-     * Sums vote credits
-     * @param int $vote_credits
-     * @return bool
-     */
-    public function giveVoteCredits($vote_credits = 1)
+    public function giveVoteCredits(int $vote_credits = 1): VoteCredit
     {
+        /** @var VoteCredit $vote_bag */
         $vote_bag = $this->voteCredits()->first();
         if ($vote_bag) { // update
             $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
@@ -106,10 +99,10 @@ trait Voter
 
     public function getVoteCredits(): int
     {
-        return (integer)optional($this->voteCredits()->first())->credits;
+        return (int)optional($this->voteCredits()->first())->credits;
     }
 
-    static function massiveVoteCredits(Collection $voters, $credits): Collection
+    static function massiveVoteCredits(Collection $voters, int $credits): Collection
     {
         $voters->each(function ($voter) use ($credits) {
             $voter->giveVoteCredits($credits);

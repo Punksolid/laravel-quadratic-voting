@@ -6,15 +6,15 @@
  * Time: 12:04 AM
  */
 
-namespace Punksolid\LaravelQuadraticVoting;
+namespace Punksolid\LaravelQuadraticVoting\Traits;
 
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Collection;
 
 trait isVotable
 {
-
-    public function voters()
+    public function voters(): BelongsToMany
     {
         return $this->belongsToMany(
             User::class,
@@ -33,7 +33,7 @@ trait isVotable
         return $this->voters()->sum("quantity");
     }
 
-    public function getVoters(): \Illuminate\Support\Collection
+    public function getVoters(): Collection
     {
         return $this
             ->voters()
