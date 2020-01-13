@@ -10,29 +10,32 @@ namespace Punksolid\LaravelQuadraticVoting;
 
 
 use App\Idea;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Punksolid\LaravelQuadraticVoting\Interfaces\IsVotableInterface;
+use Punksolid\LaravelQuadraticVoting\Models\VoteCredit;
 
 trait Voter
 {
-    /**
-     *
-     */
-    public function voteOn(Model $model, $vote_credits = 1)
+    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): bool
     {
         if (!$this->hasCredits($vote_credits)) {
             return false;
         }
 
-        $votes_already_emitted = $this->ideas()->groupBy('voter_id')->get()->sum('credits');
+        $votes_already_emitted = $this->ideas()
+            ->groupBy(
+                config('laravel_quadratic.column_names.voter_key')
+            )->get()
+            ->sum('credits');
         $this->ideas()->detach();
         $votes_credits_already_emitted = pow($votes_already_emitted, 2);
         $total_vote_credits = $vote_credits + $votes_credits_already_emitted;
         $votes_quantity = sqrt($total_vote_credits); //new
 
-
         $this->ideas()->attach($model->id, [
-            "voter_id" => $this->id,
+            config('laravel_quadratic.column_names.voter_key') => $this->id,
             "votable_type" => get_class($model),
             "votable_id" => $model->id,
             "quantity" => $votes_quantity
@@ -44,20 +47,18 @@ trait Voter
 
     }
 
-    public function hasCredits($wanna_spend): bool
+    public function hasCredits(int $wanna_spend): bool
     {
         $vote_bag = $this->voteCredits()->first();
-        if (!$vote_bag) {
-            return false;
-        } elseif ($vote_bag->credits >= $wanna_spend) {
+        if ($vote_bag && $vote_bag->credits >= $wanna_spend) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 
-    public function spendCredits($credits): int
+    public function spendCredits(int $credits): int
     {
         $voter_bag = $this->voteCredits()->first();
         if ($voter_bag) {
@@ -70,10 +71,9 @@ trait Voter
         return 0;
     }
 
-    public function ideas()
+    public function ideas(): BelongsToMany
     {
-        //todo aqui
-        return $this->belongsToMany(Idea::class, "votes", "voter_id", "votable_id")
+        return $this->belongsToMany(Idea::class, "votes", config('laravel_quadratic.column_names.voter_key'), "votable_id")
             ->withPivot([
                 "votable_type",
                 "votable_id",
@@ -81,18 +81,14 @@ trait Voter
             ])->withTimestamps();
     }
 
-    public function voteCredits()
+    public function voteCredits(): HasOne
     {
-        return $this->hasOne(VoteCredit::class, 'voter_id');
+        return $this->hasOne(VoteCredit::class, config('laravel_quadratic.column_names.voter_key'));
     }
 
-    /**
-     * Sums vote credits
-     * @param int $vote_credits
-     * @return bool
-     */
-    public function giveVoteCredits($vote_credits = 1)
+    public function giveVoteCredits(int $vote_credits = 1): VoteCredit
     {
+        /** @var VoteCredit $vote_bag */
         $vote_bag = $this->voteCredits()->first();
         if ($vote_bag) { // update
             $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
@@ -106,10 +102,10 @@ trait Voter
 
     public function getVoteCredits(): int
     {
-        return (integer)optional($this->voteCredits()->first())->credits;
+        return (int)optional($this->voteCredits()->first())->credits;
     }
 
-    static function massiveVoteCredits(Collection $voters, $credits): Collection
+    static function massiveVoteCredits(Collection $voters, int $credits): Collection
     {
         $voters->each(function ($voter) use ($credits) {
             $voter->giveVoteCredits($credits);

@@ -13,18 +13,18 @@ class CreateVotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('votes', function (Blueprint $table) {
+        $tableNames = config('laravel_quadratic.table_names');
+        $columnNames = config('laravel_quadratic.column_names');
+
+        Schema::create($tableNames['votes'], function (Blueprint $table) use ($columnNames) {
             $table->increments('id');
 
-            $table->integer("voter_id")->index()->nullable();
-
+            $table->integer($columnNames['voter_key'])->index()->nullable();
             $table->integer("votable_id")->index()->nullable();
             $table->string("votable_type")->index()->nullable();
             $table->integer('quantity')->nullable();
-//            $table->morphs("votable");
             $table->timestamps();
         });
-
 
     }
 
@@ -35,6 +35,8 @@ class CreateVotesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('votes');
+        $tableNames = config('laravel_quadratic.table_names');
+
+        Schema::dropIfExists($tableNames['votes']);
     }
 }
