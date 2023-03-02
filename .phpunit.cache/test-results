@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Punksolid\\LaravelQuadraticVoting\\Tests\\VotingTest::test_user_can_vote_an_idea":4,"LaravelQuadraticVoting\\Tests\\VotingTest::test_user_can_vote_an_idea":4},"times":{"Punksolid\\LaravelQuadraticVoting\\Tests\\VotingTest::test_user_can_vote_an_idea":0.316,"LaravelQuadraticVoting\\Tests\\VotingTest::test_user_can_vote_an_idea":0.073}}
