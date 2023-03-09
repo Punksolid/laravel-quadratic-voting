@@ -7,14 +7,12 @@ use Illuminate\Database\Migrations\Migration;
 class CreateVotesTable extends Migration
 {
     /**
-     * Run the migrations.
-     *
-     * @return void
+     * Default table name is votes
      */
     public function up()
     {
-        $tableNames = config('laravel_quadratic.table_names');
-        $columnNames = config('laravel_quadratic.column_names');
+        $tableNames = config('laravel_quadratic.table_names'); // array
+        $columnNames = config('laravel_quadratic.column_names'); // array
 
         Schema::create($tableNames['votes'], function (Blueprint $table) use ($columnNames) {
             $table->increments('id');

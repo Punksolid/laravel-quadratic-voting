@@ -1,9 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration for the vote_credits table. Other name can be set in the config file.
+ * default name is vote_bag
+ */
 class CreateVoteBagTable extends Migration
 {
     /**
