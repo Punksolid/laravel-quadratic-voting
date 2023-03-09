@@ -1,13 +1,18 @@
 {
     "name": "punksolid/laravel-quadratic-voting",
-    "description": "Voting system implementation for laravel. Quadratic Voting, not simple.",
+    "description": "Voting system implementation for laravel. Quadratic voting approach.",
     "type": "library",
     "require": {
-        "php": "^7.2"
+        "php": "^8.1",
+        "illuminate/database": "^9.0",
+        "illuminate/support": "^9.0",
+        "illuminate/contracts": "^9.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^4.5"
-    },
+        "orchestra/testbench": "^7.0",
+        "phpunit/phpunit": "^9.5",
+        "nunomaduro/collision": "^6.2",
+        "rector/rector": "^0.15.0@dev"},
     "authors": [
         {
             "name": "Jose Palazuelos",
@@ -16,20 +21,15 @@
     ],
     "autoload": {
         "psr-4": {
-            "Punksolid\\LaravelQuadraticVoting\\": "src/"
+            "LaravelQuadraticVoting\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Punksolid\\LaravelQuadraticVoting\\Tests\\": "tests/"
+            "LaravelQuadraticVoting\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Punksolid\\LaravelQuadraticVoting\\LaravelQuadraticVotingProvider"
-            ]
-        }
-    },
-    "license": "GPL-3.0-or-later"
+
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "dev"
 }

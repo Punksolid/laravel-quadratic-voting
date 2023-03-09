@@ -3,7 +3,7 @@
 return [
     'models' => [
         'voter' => Illuminate\Foundation\Auth\User::class,
-        'vote_credit' => Punksolid\LaravelQuadraticVoting\Models\VoteCredit::class,
+        'vote_credit' => LaravelQuadraticVoting\Models\VoteCredit::class,
     ],
 
     'table_names' => [
