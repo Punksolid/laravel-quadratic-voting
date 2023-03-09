@@ -6,13 +6,13 @@
  * Time: 12:04 AM
  */
 
-namespace Punksolid\LaravelQuadraticVoting\Traits;
+namespace LaravelQuadraticVoting\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use Punksolid\LaravelQuadraticVoting\Interfaces\VoterInterface;
+use LaravelQuadraticVoting\Interfaces\VoterInterface;
 
-trait isVotable
+trait IsVotable
 {
     public function voters(): BelongsToMany
     {

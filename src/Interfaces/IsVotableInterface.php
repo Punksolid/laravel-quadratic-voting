@@ -1,6 +1,6 @@
 <?php
 
-namespace Punksolid\LaravelQuadraticVoting\Interfaces;
+namespace LaravelQuadraticVoting\Interfaces;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;

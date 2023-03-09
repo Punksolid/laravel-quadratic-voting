@@ -6,16 +6,16 @@
  * Time: 01:29 AM
  */
 
-namespace Punksolid\LaravelQuadraticVoting\Interfaces;
+namespace LaravelQuadraticVoting\Interfaces;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use LaravelQuadraticVoting\Models\VoteCredit;
 
 interface VoterInterface
 {
-    public function voteOn(Model $model, int $vote_credits = 1): bool;
+    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): int|bool;
 
     public function hasCredits(int $wanna_spend): bool;
 
