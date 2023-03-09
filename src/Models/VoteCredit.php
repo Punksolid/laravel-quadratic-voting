@@ -1,10 +1,10 @@
 <?php
 
-namespace Punksolid\LaravelQuadraticVoting\Models;
+namespace LaravelQuadraticVoting\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Punksolid\LaravelQuadraticVoting\Interfaces\VoterInterface;
+use LaravelQuadraticVoting\Interfaces\VoterInterface;
 
 class VoteCredit extends Model
 {

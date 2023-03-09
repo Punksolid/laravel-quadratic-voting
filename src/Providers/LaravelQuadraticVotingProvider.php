@@ -1,10 +1,12 @@
 <?php
 
-namespace Punksolid\LaravelQuadraticVoting;
+namespace Punksolid\LaravelQuadraticVoting\Providers;
 
+use Factories\IdeaFactory;
+use Factories\UserFactory;
 use Illuminate\Support\ServiceProvider;
-use Punksolid\LaravelQuadraticVoting\Interfaces\IsVotableInterface;
-use Punksolid\LaravelQuadraticVoting\Interfaces\VoterInterface;
+use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
+use LaravelQuadraticVoting\Interfaces\VoterInterface;
 
 class LaravelQuadraticVotingProvider extends ServiceProvider
 {
@@ -15,14 +17,10 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(
-            $this->getBaseDir('database/migrations')
-        );
-
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         $this->publishes([
-            $this->getBaseDir('config') => config_path(),
-        ], 'config');
-
+            __DIR__ . '/../config/laravel_quadratic.php' => config_path('laravel_quadratic.php')
+            ], 'config');
 
         $this->publishes(
             [
@@ -32,6 +30,11 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
         );
 
         $this->registerModelBindings();
+
+//        register the factory
+        $this->app->make(UserFactory::class);
+        $this->app->make(IdeaFactory::class);
+
     }
 
     /**
@@ -42,14 +45,14 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            $this->getBaseDir('config/permission.php'),
-            'permission'
+            $this->getBaseDir('config/laravel_quadratic.php'),
+            'laravel_quadratic'
         );
     }
 
     private function registerModelBindings()
     {
-        $config = $this->app['config']['permission.models'];
+        $config = $this->app['config']['laravel_quadratic.models'];
 
         $this->app->bind(VoterInterface::class, $config['voter']);
         $this->app->bind(IsVotableInterface::class, $config['vote_credit']);

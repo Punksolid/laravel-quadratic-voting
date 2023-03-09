@@ -6,31 +6,27 @@
  * Time: 12:03 AM
  */
 
-namespace Punksolid\LaravelQuadraticVoting;
+namespace LaravelQuadraticVoting\Traits;
 
 
-use App\Idea;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
-use Punksolid\LaravelQuadraticVoting\Interfaces\IsVotableInterface;
-use Punksolid\LaravelQuadraticVoting\Models\VoteCredit;
+use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
+use LaravelQuadraticVoting\Models\Idea;
+use LaravelQuadraticVoting\Models\VoteCredit;
 
-trait Voter
+trait VoterTrait
 {
-    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): bool
+    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): int|bool
     {
         if (!$this->hasCredits($vote_credits)) {
             return false;
         }
 
-        $votes_already_emitted = $this->ideas()
-            ->groupBy(
-                config('laravel_quadratic.column_names.voter_key')
-            )->get()
-            ->sum('credits');
+        $votes_already_emitted = $this->getVotesAlreadyEmitted();
         $this->ideas()->detach();
-        $votes_credits_already_emitted = pow($votes_already_emitted, 2);
+        $votes_credits_already_emitted = $votes_already_emitted ** 2;
         $total_vote_credits = $vote_credits + $votes_credits_already_emitted;
         $votes_quantity = sqrt($total_vote_credits); //new
 
@@ -43,20 +39,15 @@ trait Voter
 
         $this->spendCredits($vote_credits);
 
-        return true;
+        return $vote_credits;
 
     }
 
     public function hasCredits(int $wanna_spend): bool
     {
         $vote_bag = $this->voteCredits()->first();
-        if ($vote_bag && $vote_bag->credits >= $wanna_spend) {
-            return true;
-        }
-
-        return false;
+        return $vote_bag && $vote_bag->credits >= $wanna_spend;
     }
-
 
     public function spendCredits(int $credits): int
     {
@@ -88,16 +79,13 @@ trait Voter
 
     public function giveVoteCredits(int $vote_credits = 1): VoteCredit
     {
-        /** @var VoteCredit $vote_bag */
-        $vote_bag = $this->voteCredits()->first();
-        if ($vote_bag) { // update
-            $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
-        } else { //save
-            $vote_bag = $this->voteCredits()->create(['credits' => $vote_credits]);
-        }
 
-        return $vote_bag;
+        return $this->voteCredits()->firstOrCreate([], ['credits' => 0])
+            ->tap(function ($vote_bag) use ($vote_credits) {
+                $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
+            });
 
+//        return $vote_bag;
     }
 
     public function getVoteCredits(): int
@@ -112,5 +100,14 @@ trait Voter
         });
 
         return $voters;
+    }
+
+    public function getVotesAlreadyEmitted(): int
+    {
+        return $this->ideas()
+            ->groupBy(
+                config('laravel_quadratic.column_names.voter_key')
+            )->get()
+            ->sum('credits');
     }
 }
