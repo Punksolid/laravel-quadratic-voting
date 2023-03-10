@@ -47,4 +47,21 @@ class QuadraticVoteServiceTest extends TestCase
         $this->expectException(NotExactCreditsForVotes::class);
         $quadratic_vote_service->processCreditsToVotes(-1);
     }
+
+    /** @test */
+    public function it_can_start_with_another_cost()
+    {
+        $quadratic_vote_service = new QuadraticVoteService();
+        $quadratic_vote_service->setStartNumberOfVotes(2);
+
+        $this->assertEquals(3, $quadratic_vote_service->processCreditsToVotes(9));
+    }
+
+    /** @test */
+    public function it_can_convert_votes_to_credits()
+    {
+        $quadratic_vote_service = new QuadraticVoteService();
+        // 1 + 4 +  9 = 14
+        $this->assertEquals(14, $quadratic_vote_service->convertVotesToCredits(3));
+    }
 }

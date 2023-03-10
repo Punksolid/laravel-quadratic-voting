@@ -10,18 +10,17 @@ namespace LaravelQuadraticVoting\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use LaravelQuadraticVoting\Interfaces\VoterInterface;
 
 trait IsVotable
 {
-    public function voters(): BelongsToMany
+    public function voters(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this
             ->belongsToMany(
-                VoterInterface::class,
+                \config('laravel_quadratic.models.voter'),
                 "votes",
                 'votable_id',
-                config('laravel_quadratic.column_names.voter_key')
+                \config('laravel_quadratic.column_names.voter_key')
             )->withPivot([
                 "votable_type",
                 "votable_id",
@@ -29,7 +28,7 @@ trait IsVotable
             ]);
     }
 
-    public function getCountVotes(): bool
+    public function getCountVotes(): int
     {
         return $this->voters()->sum("quantity");
     }
@@ -39,7 +38,7 @@ trait IsVotable
         return $this
             ->voters()
             ->groupBy(
-                config('laravel_quadratic.column_names.voter_key')
+                \config('laravel_quadratic.column_names.voter_key')
             )
             ->get();
     }

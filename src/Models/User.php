@@ -3,7 +3,7 @@
 namespace LaravelQuadraticVoting\Models;
 
 
-use Orchestra\Testbench\Factories\UserFactory;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use LaravelQuadraticVoting\Interfaces\VoterInterface;

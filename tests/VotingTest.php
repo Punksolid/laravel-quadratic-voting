@@ -1,61 +1,125 @@
 <?php
 
-namespace Tests\Unit;
+namespace LaravelQuadraticVoting\Tests;
 
-use App\Article;
-use App\Idea;
-use App\User;
-use App\Vote;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Exception;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use LaravelQuadraticVoting\Exceptions\NotExactCreditsForVotes;
+use LaravelQuadraticVoting\Models\Idea;
+use LaravelQuadraticVoting\Models\User;
 
 class VotingTest extends TestCase
 {
-    public function test_user_can_vote_an_idea()
-    {
-        $user = factory(User::class)->create();
-        $user->giveVoteCredits(5);
-        $idea = factory(Idea::class)->create();
+    use RefreshDatabase;
+    use DatabaseMigrations;
 
-        $this->assertTrue($user->voteOn($idea, 5));
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../tests/database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/migrations');
     }
 
-    public function test_get_votes_of_a_thing()
-    {
-        $user = factory(User::class)->create();
-        $user->giveVoteCredits(16);
-        $idea = factory(Idea::class)->create();
-        $user->voteOn($idea, 12);
-        $user->voteOn($idea, 4);
 
+    /**
+     * @return void
+     * @throws Exception
+     * @covers \LaravelQuadraticVoting\Traits\VoterTrait::voteOn
+     */
+    public function test_user_can_vote_an_idea(): void
+    {
+
+        // create a user mock object
+        /** @var User $user */
+        $user = User::factory()->create();
+
+
+        $user->giveVoteCredits(5);
+        $idea = Idea::factory()->create();
+
+        $this->assertEquals(1, $user->voteOn($idea, 1));
+    }
+
+    /**
+     * @return void
+     */
+    public function test_get_votes_of_a_thing_as_paying_in_consecutive_cost(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        /** @var Idea $idea */
+        $idea = Idea::factory()->create();
+
+        $user->giveVoteCredits(100);
+        $user->voteOn($idea, 1);
+        $this->assertEquals(1, $idea->getCountVotes());
+        $user->voteOn($idea, 4);
+        $this->assertEquals(2, $idea->getCountVotes());
+        $user->voteOn($idea, 9);
+        $this->assertEquals(3, $idea->getCountVotes());
+        $user->voteOn($idea, 16);
         $this->assertEquals(4, $idea->getCountVotes());
+        $user->voteOn($idea, 25);
+        $this->assertEquals(5, $idea->getCountVotes());
+        $user->voteOn($idea, 36);
+        $this->assertEquals(6, $idea->getCountVotes());
+    }
+
+    /**
+     * Assert throw exception when user has not enough credits
+     * @return void
+     * @throws Exception
+     * @covers \LaravelQuadraticVoting\Traits\VoterTrait::voteOn
+     */
+    public function test_get_votes_of_a_thing_not_paying_in_order()
+    {
+
+//        $this->expectException(\Exception::class);
+        /** @var User $user */
+        $user = User::factory()->create();
+        /** @var Idea $idea */
+        $idea = Idea::factory()->create();
+
+        $user->giveVoteCredits(100);
+        $user->voteOn($idea, 14);
+
+        $this->assertEquals(3, $idea->getCountVotes());
+
     }
 
     public function test_get_votes_default()
     {
-        $idea = factory(Idea::class)->create();
+        $idea = Idea::factory()->create();
 
         $this->assertEquals(0, $idea->getCountVotes());
 
     }
 
-    public function test_get_voters()
+    public function test_get_voters_of_an_idea(): void
     {
-        $user = factory(User::class)->create();
-        $user->giveVoteCredits(4);
-        $idea = factory(Idea::class)->create();
+        /** @var User $user1 */
+        $user1 = User::factory()->create();
+        /** @var User $user2 */
+        $user2 = User::factory()->create();
+        $user1->giveVoteCredits(100);
+        $user2->giveVoteCredits(100);
 
-        $user->voteOn($idea, 1);
-        $user->voteOn($idea, 3);
+        /** @var Idea $idea */
+        $idea = Idea::factory()->create();
 
-        $this->assertEquals(1, $idea->getVoters()->count());
-        $this->assertEquals($user->name, $idea->getVoters()->first()->name);
+        $user1->voteOn($idea, 1);
+        $user2->voteOn($idea, 14);
+
+        $this->assertEquals(2, $idea->getVoters()->count());
+        $this->assertEquals($user1->name, $idea->getVoters()->first()->name);
     }
 
     public function test_give_vote_credits()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $user->giveVoteCredits(10);
         $user->giveVoteCredits(9);
@@ -63,65 +127,62 @@ class VotingTest extends TestCase
         $this->assertEquals(19, $user->getVoteCredits());
     }
 
-    public function test_vote_cost_exponentially()
+    public function test_vote_costs_exponentially()
     {
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
         $user->giveVoteCredits(14);
-        $idea = factory(Idea::class)->create();
+        $idea = Idea::factory()->create();
 
-        $this->assertTrue($user->voteOn($idea, 14));
+        $this->assertEquals(3, $user->voteOn($idea, 14));
         $this->assertEquals(0, $user->getVoteCredits(), "Cant spend correctly");
-        $this->assertEquals(4, $idea->getCountVotes());
+        $this->assertEquals(3, $idea->getCountVotes());
 
     }
 
     public function test_cant_vote_without_credits()
     {
-        $user = factory(User::class)->create();
-        $idea = factory(Idea::class)->create();
+        $this->expectException(Exception::class);
 
-        $this->assertFalse($user->voteOn($idea, 10));
+        $user = User::factory()->create();
+        $idea = Idea::factory()->create();
 
+        $user->voteOn($idea, 14);
     }
 
     public function test_cant_vote_more_than_his_credits()
     {
-        $user = factory(User::class)->create();
-        $idea = factory(Idea::class)->create();
+        $this->expectException(Exception::class);
+
+        /** @var User $user */
+        $user = User::factory()->create();
+        $idea = Idea::factory()->create();
+
         $user->giveVoteCredits(5);
 
-        $this->assertFalse($user->voteOn($idea, 10));
+        $user->voteOn($idea, 14);
+
     }
 
+    /** @test */
     public function test_two_voters_can_vote_same_idea()
     {
-        $user1 = factory(User::class)->create();
-        $user2 = factory(User::class)->create();
-        $user1->giveVoteCredits(9);
-        $user2->giveVoteCredits(9);
-        $idea = factory(Idea::class)->create();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $user1->giveVoteCredits(100);
+        $user2->giveVoteCredits(100);
+        $idea = Idea::factory()->create();
 
-        $user1->voteOn($idea, 9);
-        $user2->voteOn($idea, 9);
+        $user1->voteOn($idea, 14);
+        $user2->voteOn($idea, 14);
 
         $this->assertEquals(6, $idea->getCountVotes());
 
     }
 
-    public function test_vote_other_elements()
-    {
-        $user = factory(User::class)->create();
-        $user->giveVoteCredits(1);
-        $article = factory(Article::class)->create();
-
-        $user->voteOn($article);
-
-        $this->assertEquals(1, $article->getCountVotes());
-    }
-
     public function test_give_vote_credits_massively()
     {
-        $users = factory(User::class, 10)->create();
+        $users = User::factory(10)->create();
 
         User::massiveVoteCredits($users, 10);
 

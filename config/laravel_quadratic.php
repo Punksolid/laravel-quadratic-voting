@@ -2,7 +2,7 @@
 
 return [
     'models' => [
-        'voter' => Illuminate\Foundation\Auth\User::class,
+        'voter' => Illuminate\Foundation\Auth\User::class, //App\Models\User::class,
         'vote_credit' => LaravelQuadraticVoting\Models\VoteCredit::class,
     ],
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Factories;
+namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use LaravelQuadraticVoting\Models\Idea;
@@ -12,8 +12,8 @@ class IdeaFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'title' => $this->faker->sentence(3),
+            'description' => $this->faker->paragraph(8),
         ];
     }
 }

@@ -21,7 +21,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "LaravelQuadraticVoting\\": "src/"
+            "LaravelQuadraticVoting\\": "src/",
+            "Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {

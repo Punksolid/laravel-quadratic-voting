@@ -9,26 +9,42 @@
 namespace LaravelQuadraticVoting\Traits;
 
 
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use LaravelQuadraticVoting\Exceptions\NotExactCreditsForVotes;
 use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
 use LaravelQuadraticVoting\Models\Idea;
 use LaravelQuadraticVoting\Models\VoteCredit;
+use LaravelQuadraticVoting\Services\QuadraticVoteService;
+use function config;
+use function get_class;
+use function optional;
 
 trait VoterTrait
 {
-    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): int|bool
+
+    /**
+     * Registers a vote on a votable model and returns the final number of votes registered
+     *
+     * @param IsVotableInterface $model
+     * @param int $vote_credits
+     * @return int
+     * @throws NotExactCreditsForVotes
+     */
+    public function voteOn(Model $model, int $vote_credits = 1): int
     {
         if (!$this->hasCredits($vote_credits)) {
-            return false;
+            throw new Exception("Voter has not enough credits");
         }
 
         $votes_already_emitted = $this->getVotesAlreadyEmitted();
         $this->ideas()->detach();
-        $votes_credits_already_emitted = $votes_already_emitted ** 2;
-        $total_vote_credits = $vote_credits + $votes_credits_already_emitted;
-        $votes_quantity = sqrt($total_vote_credits); //new
+        $quadraticVoteService = new QuadraticVoteService();
+        $quadraticVoteService->setStartNumberOfVotes($votes_already_emitted);
+        $votes_quantity = $quadraticVoteService->processCreditsToVotes($vote_credits);
 
         $this->ideas()->attach($model->id, [
             config('laravel_quadratic.column_names.voter_key') => $this->id,
@@ -39,7 +55,7 @@ trait VoterTrait
 
         $this->spendCredits($vote_credits);
 
-        return $vote_credits;
+        return $votes_quantity;
 
     }
 
@@ -62,6 +78,10 @@ trait VoterTrait
         return 0;
     }
 
+    /**
+     * Relationship definition with ideas
+     * @return BelongsToMany
+     */
     public function ideas(): BelongsToMany
     {
         return $this->belongsToMany(Idea::class, "votes", config('laravel_quadratic.column_names.voter_key'), "votable_id")
@@ -79,15 +99,21 @@ trait VoterTrait
 
     public function giveVoteCredits(int $vote_credits = 1): VoteCredit
     {
+        /** @var VoteCredit $vote_bag */
+        $vote_bag = $this->voteCredits()->first();
+        if ($vote_bag) { // update
+            $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
+        } else { //save
+            $vote_bag = $this->voteCredits()->create(['credits' => $vote_credits]);
+        }
 
-        return $this->voteCredits()->firstOrCreate([], ['credits' => 0])
-            ->tap(function ($vote_bag) use ($vote_credits) {
-                $vote_bag->update(['credits' => $vote_bag->credits + $vote_credits]);
-            });
+        return $vote_bag;
 
-//        return $vote_bag;
     }
 
+    /**
+     * Get the number of credits that the voter has available to use
+     */
     public function getVoteCredits(): int
     {
         return (int)optional($this->voteCredits()->first())->credits;
@@ -108,6 +134,7 @@ trait VoterTrait
             ->groupBy(
                 config('laravel_quadratic.column_names.voter_key')
             )->get()
-            ->sum('credits');
+            ->sum('pivot.quantity');
     }
+
 }

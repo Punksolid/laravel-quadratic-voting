@@ -1,9 +1,7 @@
 <?php
 
-namespace Punksolid\LaravelQuadraticVoting\Providers;
+namespace LaravelQuadraticVoting\Providers;
 
-use Factories\IdeaFactory;
-use Factories\UserFactory;
 use Illuminate\Support\ServiceProvider;
 use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
 use LaravelQuadraticVoting\Interfaces\VoterInterface;
@@ -31,9 +29,6 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
 
         $this->registerModelBindings();
 
-//        register the factory
-        $this->app->make(UserFactory::class);
-        $this->app->make(IdeaFactory::class);
 
     }
 

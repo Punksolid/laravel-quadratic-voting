@@ -8,6 +8,7 @@
 
 namespace LaravelQuadraticVoting\Interfaces;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
@@ -15,7 +16,7 @@ use LaravelQuadraticVoting\Models\VoteCredit;
 
 interface VoterInterface
 {
-    public function voteOn(IsVotableInterface $model, int $vote_credits = 1): int|bool;
+    public function voteOn(Model $model, int $vote_credits = 1): int;
 
     public function hasCredits(int $wanna_spend): bool;
 

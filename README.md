@@ -11,7 +11,7 @@ composer require punksolid/laravel-quadratic-voting
 
  //User.php
  //Add the Voter trait 
- use LaravelQuadraticVoting\VoterTrait;
+ use LaravelQuadraticVoting\Traits\VoterTrait;
  
  
  class User extends Authenticatable
@@ -24,7 +24,7 @@ composer require punksolid/laravel-quadratic-voting
 <?php
 
 //On the models that are going to be votable add the following
-use LaravelQuadraticVoting\isVotable;
+use LaravelQuadraticVoting\Traits\isVotable;
 
 //for example
 class Idea extends Model
