@@ -30,6 +30,13 @@
             "LaravelQuadraticVoting\\Tests\\": "tests/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelQuadraticVoting\\LaravelQuadraticVotingServiceProvider"
+            ]
+        }
+    },
 
     "license": "GPL-3.0-or-later",
     "minimum-stability": "dev"
