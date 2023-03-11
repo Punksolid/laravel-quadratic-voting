@@ -38,9 +38,9 @@ class UserVotesTest extends TestCase
         $user->giveVoteCredits(100);
         $idea = Idea::factory()->create();
         $user->voteOn($idea, 1);
-        $this->assertEquals(4, $user->getNextVoteCost());
+        $this->assertEquals(4, $user->getNextVoteCost($idea));
         $user->voteOn($idea, 4);
-        $this->assertEquals(9, $user->getNextVoteCost());
+        $this->assertEquals(9, $user->getNextVoteCost($idea));
     }
 
     /** @test  */
@@ -121,29 +121,35 @@ class UserVotesTest extends TestCase
     }
 
     /** @test */
-    public function test_two_voters_can_vote_same_idea()
+    public function user_can_get_overall_votes_of_two_ideas()
     {
-        $user1 = User::factory()->create();
-        $user2 = User::factory()->create();
-        $user1->giveVoteCredits(100);
-        $user2->giveVoteCredits(100);
-        $idea = Idea::factory()->create();
+        /** @var User $user */
+        $user = User::factory()->create();
+        $user->giveVoteCredits(100);
+        $idea1 = Idea::factory()->create();
+        $idea2 = Idea::factory()->create();
 
-        $user1->voteOn($idea, 14);
-        $user2->voteOn($idea, 14);
+        $user->voteOn($idea1, 14); // 3 votes
+        $user->voteOn($idea2, 30); // 4 votes
 
-        $this->assertEquals(6, $idea->getCountVotes());
+        $this->assertEquals(7, $user->getVotesAlreadyEmittedOverall());
 
     }
 
-    public function test_give_vote_credits_massively()
+    /** @test */
+    public function user_can_get_its_next_vote_cost_of_an_idea()
     {
-        $users = User::factory(10)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
+        $idea1 = Idea::factory()->create();
+        $idea2 = Idea::factory()->create();
 
-        User::massiveVoteCredits($users, 10);
+        $user->giveVoteCredits(100);
+        $user->voteOn($idea1, 1);
+        $user->voteOn($idea2, 14);
 
-        $credits = $users->first()->getVoteCredits();
+        $this->assertEquals(4, $user->getNextVoteCost($idea1));
+        $this->assertEquals(16, $user->getNextVoteCost($idea2));
 
-        $this->assertEquals(10, $credits);
     }
 }

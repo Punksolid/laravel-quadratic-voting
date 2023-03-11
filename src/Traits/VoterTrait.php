@@ -126,12 +126,7 @@ trait VoterTrait
 
     public function getVotesAlreadyEmittedOverall(): int
     {
-
-        return $this->ideas()
-            ->groupBy(
-                config('laravel_quadratic.column_names.voter_key')
-            )->get()
-            ->sum('pivot.quantity');
+        return $this->ideas()->sum('quantity');
     }
 
     public function getVotesAlreadyEmittedOnIdea(Model $is_votable_model): int
@@ -146,9 +141,9 @@ trait VoterTrait
             ->sum('pivot.quantity');
     }
 
-    public function getNextVoteCost(): int
+    public function getNextVoteCost(Model $idea): int
     {
-        $votes_already_emitted = $this->getVotesAlreadyEmittedOverall();
+        $votes_already_emitted = $this->getVotesAlreadyEmittedOnIdea($idea);
         $quadraticVoteService = new QuadraticVoteService();
 
         return $quadraticVoteService->convertVotesToCredits($votes_already_emitted + 1) - $quadraticVoteService->convertVotesToCredits($votes_already_emitted);
