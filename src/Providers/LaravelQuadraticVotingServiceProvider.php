@@ -1,12 +1,13 @@
 <?php
 
+
 namespace LaravelQuadraticVoting\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
 use LaravelQuadraticVoting\Interfaces\VoterInterface;
 
-class LaravelQuadraticVotingProvider extends ServiceProvider
+class LaravelQuadraticVotingServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
