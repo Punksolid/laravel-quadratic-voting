@@ -18,12 +18,12 @@ class LaravelQuadraticVotingServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         $this->publishes([
-            __DIR__ . '/../config/laravel_quadratic.php' => config_path('laravel_quadratic.php')
+            __DIR__ . '/../../config/laravel_quadratic.php' => config_path('laravel_quadratic.php')
             ], 'config');
 
         $this->publishes(
             [
-                $this->getBaseDir('database/migrations') => database_path('migrations'),
+                __DIR__.'/../../database/migrations' => database_path('migrations'),
             ],
             'laravel-quadratic-migrations'
         );
@@ -54,12 +54,4 @@ class LaravelQuadraticVotingServiceProvider extends ServiceProvider
         $this->app->bind(IsVotableInterface::class, $config['vote_credit']);
     }
 
-    protected function getBaseDir(string $path): string
-    {
-        return sprintf(
-            '%s/../%s',
-            __DIR__,
-            $path
-        );
-    }
 }
