@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 interface IsVotableInterface
 {
-    public function voters(): \Illuminate\Database\Eloquent\Relations\BelongsToMany;
+    public function voters(): BelongsToMany;
 
     public function getCountVotes(): int;
 

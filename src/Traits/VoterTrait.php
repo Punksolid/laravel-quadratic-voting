@@ -19,9 +19,6 @@ use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
 use LaravelQuadraticVoting\Models\Idea;
 use LaravelQuadraticVoting\Models\VoteCredit;
 use LaravelQuadraticVoting\Services\QuadraticVoteService;
-use function config;
-use function get_class;
-use function optional;
 
 trait VoterTrait
 {
@@ -40,8 +37,8 @@ trait VoterTrait
             throw new Exception("Voter has not enough credits");
         }
 
-        $votes_already_emitted = $this->getVotesAlreadyEmitted();
-        $this->ideas()->detach();
+        $votes_already_emitted = $this->getVotesAlreadyEmittedOnIdea($model);
+        $this->ideas()->detach([$model->id]);
         $quadraticVoteService = new QuadraticVoteService();
         $quadraticVoteService->setStartNumberOfVotes($votes_already_emitted);
         $votes_quantity = $quadraticVoteService->processCreditsToVotes($vote_credits);
@@ -108,7 +105,6 @@ trait VoterTrait
         }
 
         return $vote_bag;
-
     }
 
     /**
@@ -128,8 +124,9 @@ trait VoterTrait
         return $voters;
     }
 
-    public function getVotesAlreadyEmitted(): int
+    public function getVotesAlreadyEmittedOverall(): int
     {
+
         return $this->ideas()
             ->groupBy(
                 config('laravel_quadratic.column_names.voter_key')
@@ -137,4 +134,23 @@ trait VoterTrait
             ->sum('pivot.quantity');
     }
 
+    public function getVotesAlreadyEmittedOnIdea(Model $is_votable_model): int
+    {
+
+        return $this->ideas()
+            ->where('votable_id', $is_votable_model->id)
+            ->where('votable_type', get_class($is_votable_model))
+            ->groupBy(
+                config('laravel_quadratic.column_names.voter_key')
+            )->get()
+            ->sum('pivot.quantity');
+    }
+
+    public function getNextVoteCost(): int
+    {
+        $votes_already_emitted = $this->getVotesAlreadyEmittedOverall();
+        $quadraticVoteService = new QuadraticVoteService();
+
+        return $quadraticVoteService->convertVotesToCredits($votes_already_emitted + 1) - $quadraticVoteService->convertVotesToCredits($votes_already_emitted);
+    }
 }
