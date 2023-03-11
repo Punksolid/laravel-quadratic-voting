@@ -3,6 +3,7 @@
 namespace LaravelQuadraticVoting\Tests;
 
 use LaravelQuadraticVoting\Models\User;
+use LaravelQuadraticVoting\Providers\LaravelQuadraticVotingProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
