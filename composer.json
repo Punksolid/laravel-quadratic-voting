@@ -33,7 +33,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelQuadraticVoting\\Providers\\LaravelQuadraticVotingServiceProvider"
+                "\\LaravelQuadraticVoting\\Providers\\LaravelQuadraticVotingServiceProvider"
             ]
         }
     },

@@ -40,7 +40,7 @@ class LaravelQuadraticVotingProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            $this->getBaseDir('config/laravel_quadratic.php'),
+            __DIR__ . '/../../config/laravel_quadratic.php',
             'laravel_quadratic'
         );
     }

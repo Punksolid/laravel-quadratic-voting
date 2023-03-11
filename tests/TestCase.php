@@ -21,4 +21,15 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('laravel_quadratic.table_names.vote_credits', 'vote_bag');
         $app['config']->set('laravel_quadratic.models.voter', User::class);
     }
+
+    /**
+     * @param $app
+     * @return string[]
+     */
+    protected function getPackageProviders($app): array
+    {
+        return [
+            LaravelQuadraticVotingProvider::class
+        ];
+    }
 }
