@@ -81,7 +81,11 @@ trait VoterTrait
      */
     public function ideas(): BelongsToMany
     {
-        return $this->belongsToMany(config('laravel_quadratic.models.is_votable'), "votes", config('laravel_quadratic.column_names.voter_key'), "votable_id")
+        return $this->belongsToMany(
+            config('laravel_quadratic.models.is_votable'), // Idea::class,
+            "votes",
+            config('laravel_quadratic.column_names.voter_key'), // "voter_id",
+            "votable_id")
             ->withPivot([
                 "votable_type",
                 "votable_id",
@@ -89,6 +93,10 @@ trait VoterTrait
             ])->withTimestamps();
     }
 
+    /**
+     * Relationship definition with vote credits
+     * @return HasOne
+     */
     public function voteCredits(): HasOne
     {
         return $this->hasOne(config('laravel_quadratic.models.vote_credit'), config('laravel_quadratic.column_names.voter_key'));
