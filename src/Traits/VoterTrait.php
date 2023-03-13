@@ -16,12 +16,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use LaravelQuadraticVoting\Exceptions\NotExactCreditsForVotes;
 use LaravelQuadraticVoting\Interfaces\IsVotableInterface;
-use LaravelQuadraticVoting\Models\Idea;
+use LaravelQuadraticVoting\Models\User;
 use LaravelQuadraticVoting\Models\VoteCredit;
 use LaravelQuadraticVoting\Services\QuadraticVoteService;
 
 trait VoterTrait
 {
+    public static function massiveVoteReset(Model|\Illuminate\Database\Eloquent\Collection $users): void
+    {
+        if ($users instanceof Model) {
+            $users = collect([$users]);
+        }
+
+        $users->each(function (User $user) {
+            $user->voteCredits()->delete();
+        });
+    }
 
     /**
      * Registers a vote on a votable model and returns the final number of votes registered
@@ -140,11 +150,14 @@ trait VoterTrait
     public function getVotesAlreadyEmittedOnIdea(Model $is_votable_model): int
     {
 
+        $tablename_keyname_id = $is_votable_model->getTable() . '.' . $is_votable_model->getKeyName();
+
         return $this->ideas()
             ->where('votable_id', $is_votable_model->id)
             ->where('votable_type', get_class($is_votable_model))
             ->groupBy(
-                config('laravel_quadratic.column_names.voter_key')
+                config('laravel_quadratic.column_names.voter_key'),
+                $tablename_keyname_id,
             )->get()
             ->sum('pivot.quantity');
     }
