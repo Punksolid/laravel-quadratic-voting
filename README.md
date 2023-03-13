@@ -83,6 +83,7 @@ Methods available on voter
     
     //Give voters and assign equally/massively credits
     VoterModel::massiveVoteCredits($voter_collection, $credits);
+    VoterModel::massiveVoteReset($voter_collection); // All in 0 credits
     
     //You should not spend credits without voting, but in case you need
     //decrease the available credits to the user
@@ -113,6 +114,5 @@ $idea->getVoters();
 
 ## **TODO**
 ```
-- [ ] Add a method to reset all the credits for all the voters
 - [ ] Add a methods to unvote on an idea and get credits back
 ```
