@@ -66,6 +66,37 @@ trait VoterTrait
 
     }
 
+    /**
+     * @param Model $model
+     * @return int Cost of the undone vote in credits
+     */
+    public function downVote(Model $model): int
+    {
+        $votes_already_emitted = $this->getVotesAlreadyEmittedOnIdea($model);
+
+        if ($votes_already_emitted <= 0) {
+            throw new Exception("Voter has not emitted any vote on this idea");
+        }
+
+        $this->ideas()->detach([$model->id]);
+        $quadraticVoteService = new QuadraticVoteService();
+        $quadraticVoteService->setStartNumberOfVotes($votes_already_emitted);
+
+        $cost_of_last_vote = $quadraticVoteService->getCostOfVoteNumber($votes_already_emitted);
+
+        $this->ideas()->attach($model->id, [
+            config('laravel_quadratic.column_names.voter_key') => $this->id,
+            "votable_type" => get_class($model),
+            "votable_id" => $model->id,
+            "quantity" => $votes_already_emitted - 1
+        ]);
+
+        $this->giveVoteCredits($cost_of_last_vote);
+
+        return $cost_of_last_vote;
+
+    }
+
     public function hasCredits(int $wanna_spend): bool
     {
         $vote_bag = $this->voteCredits()->first();

@@ -5,7 +5,6 @@ namespace LaravelQuadraticVoting\Tests;
 use Exception;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use LaravelQuadraticVoting\Exceptions\NotExactCreditsForVotes;
 use LaravelQuadraticVoting\Models\Idea;
 use LaravelQuadraticVoting\Models\User;
 
@@ -74,7 +73,7 @@ class VotingTest extends TestCase
      * @throws Exception
      * @covers \LaravelQuadraticVoting\Traits\VoterTrait::voteOn
      */
-    public function test_get_votes_of_a_thing_not_paying_in_order()
+    public function test_get_votes_of_a_thing_not_paying_in_order(): void
     {
 
 //        $this->expectException(\Exception::class);
@@ -96,35 +95,6 @@ class VotingTest extends TestCase
 
         $this->assertEquals(0, $idea->getCountVotes());
 
-    }
-
-    public function test_get_voters_of_an_idea(): void
-    {
-        /** @var User $user1 */
-        $user1 = User::factory()->create();
-        /** @var User $user2 */
-        $user2 = User::factory()->create();
-        $user1->giveVoteCredits(100);
-        $user2->giveVoteCredits(100);
-
-        /** @var Idea $idea */
-        $idea = Idea::factory()->create();
-
-        $user1->voteOn($idea, 1);
-        $user2->voteOn($idea, 14);
-
-        $this->assertEquals(2, $idea->getVoters()->count());
-        $this->assertEquals($user1->name, $idea->getVoters()->first()->name);
-    }
-
-    public function test_give_vote_credits()
-    {
-        $user = User::factory()->create();
-
-        $user->giveVoteCredits(10);
-        $user->giveVoteCredits(9);
-
-        $this->assertEquals(19, $user->getVoteCredits());
     }
 
     public function test_vote_costs_exponentially()

@@ -152,4 +152,47 @@ class UserVotesTest extends TestCase
         $this->assertEquals(16, $user->getNextVoteCost($idea2));
 
     }
+
+    /** @test */
+    public function it_can_downvote_and_get_credits_back()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $idea = Idea::factory()->create();
+
+        $user->giveVoteCredits(100);
+
+        $user->voteOn($idea, 5); // 1+4 = 5 credits, 2 votes
+        $this->assertEquals(95, $user->getVoteCredits());
+
+        $user->downVote($idea);
+        $user->downVote($idea);
+
+        $this->assertEquals(100, $user->getVoteCredits());
+    }
+
+    /** @test */
+    public function it_can_downvote_two_different_ideas()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $idea1 = Idea::factory()->create();
+        $idea2 = Idea::factory()->create();
+
+        $user->giveVoteCredits(100);
+
+        $user->voteOn($idea1, 5); // 1+4 = 5 credits, 2 votes
+        $user->voteOn($idea2, 5); // 1+4 = 5 credits, 2 votes
+
+        $this->assertEquals(90, $user->getVoteCredits());
+
+        $user->downVote($idea1);
+        $user->downVote($idea2);
+        $user->downVote($idea1);
+        $user->downVote($idea2);
+
+        $this->assertEquals(100, $user->getVoteCredits());
+    }
+
+
 }

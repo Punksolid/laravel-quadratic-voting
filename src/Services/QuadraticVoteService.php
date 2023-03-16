@@ -83,4 +83,11 @@ class QuadraticVoteService
 
         return $credits;
     }
+
+    public function getCostOfVoteNumber(int $vote): int
+    {
+        return $vote * $vote;
+    }
+
+
 }
