@@ -1,6 +1,10 @@
 # laravel-quadratic-voting
 Quadratic Voting Implementation library to Laravel. 
 
+What is Quadratic Voting?
+It is a voting system designed to measure not only preference but also the intensity of that preference.
+https://www.youtube.com/watch?v=pjbakxIvGFA
+
 Installation
 ```
 composer require punksolid/laravel-quadratic-voting
@@ -68,6 +72,8 @@ $user->giveVoteCredits(14); //give credits to the voter
 //to the voter model, add an isVotable model, and in the second argument
 //the number of the credits, it will process the credits to votes.
 $user->voteOn($idea, $vote_credits = 14); // This will set 3 votes to the idea 1 + 4 + 9 = 14
+
+$user->downVote($idea); // This will set -1 vote to the idea and give you the credits back
 ```
 
 Methods available on voter
@@ -112,7 +118,3 @@ $idea->getVoters();
 ```
 
 
-## **TODO**
-```
-- [ ] Add a methods to unvote on an idea and get credits back
-```
