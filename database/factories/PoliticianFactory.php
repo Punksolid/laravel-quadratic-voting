@@ -5,8 +5,6 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use LaravelQuadraticVoting\Models\Politician;
 
-
-
 class PoliticianFactory extends Factory
 {
     protected $model = Politician::class;

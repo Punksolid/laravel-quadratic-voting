@@ -88,6 +88,4 @@ class QuadraticVoteService
     {
         return $vote * $vote;
     }
-
-
 }

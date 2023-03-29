@@ -66,5 +66,4 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(JoinStringConcatRector::class);
     $rectorConfig->rule(LogicalToBooleanRector::class);
     $rectorConfig->rule(NarrowUnionTypeDocRector::class);
-
 };

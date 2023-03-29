@@ -2,7 +2,6 @@
 
 namespace LaravelQuadraticVoting\Models;
 
-
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,6 @@ use LaravelQuadraticVoting\Traits\VoterTrait;
  */
 class User extends Model implements VoterInterface
 {
-
     use VoterTrait;
     use HasFactory;
 
@@ -24,5 +22,4 @@ class User extends Model implements VoterInterface
     {
         return UserFactory::new();
     }
-
 }

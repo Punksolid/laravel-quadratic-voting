@@ -8,7 +8,6 @@
 
 namespace LaravelQuadraticVoting\Traits;
 
-
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -63,7 +62,6 @@ trait VoterTrait
         $this->spendCredits($vote_credits);
 
         return $votes_quantity;
-
     }
 
     /**
@@ -94,7 +92,6 @@ trait VoterTrait
         $this->giveVoteCredits($cost_of_last_vote);
 
         return $cost_of_last_vote;
-
     }
 
     public function hasCredits(int $wanna_spend): bool
@@ -126,7 +123,8 @@ trait VoterTrait
             config('laravel_quadratic.models.is_votable'), // Idea::class,
             "votes",
             config('laravel_quadratic.column_names.voter_key'), // "voter_id",
-            "votable_id")
+            "votable_id"
+        )
             ->withPivot([
                 "votable_type",
                 "votable_id",
@@ -164,7 +162,7 @@ trait VoterTrait
         return (int)optional($this->voteCredits()->first())->credits;
     }
 
-    static function massiveVoteCredits(Collection $voters, int $credits): Collection
+    public static function massiveVoteCredits(Collection $voters, int $credits): Collection
     {
         $voters->each(function ($voter) use ($credits) {
             $voter->giveVoteCredits($credits);
@@ -180,7 +178,6 @@ trait VoterTrait
 
     public function getVotesAlreadyEmittedOnIdea(Model $is_votable_model): int
     {
-
         $tablename_keyname_id = $is_votable_model->getTable() . '.' . $is_votable_model->getKeyName();
 
         return $this->ideas()
