@@ -30,6 +30,5 @@ interface VoterInterface
 
     public function getVoteCredits(): int;
 
-    static function massiveVoteCredits(Collection $voters, int $credits): Collection;
-
+    public static function massiveVoteCredits(Collection $voters, int $credits): Collection;
 }

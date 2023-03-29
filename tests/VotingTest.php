@@ -30,7 +30,6 @@ class VotingTest extends TestCase
      */
     public function test_user_can_vote_an_idea(): void
     {
-
         // create a user mock object
         /** @var User $user */
         $user = User::factory()->create();
@@ -75,7 +74,6 @@ class VotingTest extends TestCase
      */
     public function test_get_votes_of_a_thing_not_paying_in_order(): void
     {
-
 //        $this->expectException(\Exception::class);
         /** @var User $user */
         $user = User::factory()->create();
@@ -86,7 +84,6 @@ class VotingTest extends TestCase
         $user->voteOn($idea, 14);
 
         $this->assertEquals(3, $idea->getCountVotes());
-
     }
 
     public function test_get_votes_default()
@@ -94,7 +91,6 @@ class VotingTest extends TestCase
         $idea = Idea::factory()->create();
 
         $this->assertEquals(0, $idea->getCountVotes());
-
     }
 
     public function test_vote_costs_exponentially()
@@ -107,7 +103,6 @@ class VotingTest extends TestCase
         $this->assertEquals(3, $user->voteOn($idea, 14));
         $this->assertEquals(0, $user->getVoteCredits(), "Cant spend correctly");
         $this->assertEquals(3, $idea->getCountVotes());
-
     }
 
     public function test_cant_vote_without_credits()
@@ -131,7 +126,6 @@ class VotingTest extends TestCase
         $user->giveVoteCredits(5);
 
         $user->voteOn($idea, 14);
-
     }
 
     /** @test */
@@ -147,7 +141,6 @@ class VotingTest extends TestCase
         $user2->voteOn($idea, 14);
 
         $this->assertEquals(6, $idea->getCountVotes());
-
     }
 
     public function test_give_vote_credits_massively()

@@ -20,5 +20,4 @@ class VoteCredit extends Model
     {
         return $this->belongsTo(VoterInterface::class, 'voter_id');
     }
-
 }

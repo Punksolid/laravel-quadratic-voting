@@ -23,7 +23,6 @@ class CreateVotesTable extends Migration
             $table->integer('quantity')->nullable();
             $table->timestamps();
         });
-
     }
 
     /**

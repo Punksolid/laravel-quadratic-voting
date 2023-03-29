@@ -1,6 +1,5 @@
 <?php
 
-
 namespace LaravelQuadraticVoting\Providers;
 
 use Illuminate\Support\ServiceProvider;
@@ -29,8 +28,6 @@ class LaravelQuadraticVotingServiceProvider extends ServiceProvider
         );
 
         $this->registerModelBindings();
-
-
     }
 
     /**
@@ -53,5 +50,4 @@ class LaravelQuadraticVotingServiceProvider extends ServiceProvider
         $this->app->bind(VoterInterface::class, $config['voter']);
         $this->app->bind(IsVotableInterface::class, $config['vote_credit']);
     }
-
 }

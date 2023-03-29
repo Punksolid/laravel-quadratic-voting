@@ -12,5 +12,4 @@ interface IsVotableInterface
     public function getCountVotes(): int;
 
     public function getVoters(): \Illuminate\Support\Collection;
-
 }

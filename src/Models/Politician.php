@@ -2,7 +2,6 @@
 
 namespace LaravelQuadraticVoting\Models;
 
-
 use Database\Factories\IdeaFactory;
 use Database\Factories\PoliticianFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

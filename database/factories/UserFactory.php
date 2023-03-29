@@ -8,7 +8,6 @@ use LaravelQuadraticVoting\Models\User;
 
 class UserFactory extends Factory
 {
-
     protected $model = User::class;
 
     /**

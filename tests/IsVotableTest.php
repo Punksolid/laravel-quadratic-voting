@@ -45,6 +45,4 @@ class IsVotableTest extends TestCase
         $user->voteOn($politician, 4);
         $this->assertEquals(9, $user->getNextVoteCost($politician));
     }
-
-
 }

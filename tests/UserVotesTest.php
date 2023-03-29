@@ -30,7 +30,6 @@ class UserVotesTest extends TestCase
      */
     public function test_user_can_get_next_vote_cost(): void
     {
-
         // create a user mock object
         /** @var User $user */
         $user = User::factory()->create();
@@ -62,7 +61,6 @@ class UserVotesTest extends TestCase
     /** @test  */
     public function two_users_can_vote_one_idea(): void
     {
-
         /** @var User $user */
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -88,7 +86,6 @@ class UserVotesTest extends TestCase
 
         $this->assertEquals(3, $idea1->getCountVotes());
         $this->assertEquals(3, $idea1->getCountVotes());
-
     }
 
     public function test_get_voters_of_an_idea(): void
@@ -133,7 +130,6 @@ class UserVotesTest extends TestCase
         $user->voteOn($idea2, 30); // 4 votes
 
         $this->assertEquals(7, $user->getVotesAlreadyEmittedOverall());
-
     }
 
     /** @test */
@@ -150,7 +146,6 @@ class UserVotesTest extends TestCase
 
         $this->assertEquals(4, $user->getNextVoteCost($idea1));
         $this->assertEquals(16, $user->getNextVoteCost($idea2));
-
     }
 
     /** @test */
@@ -193,6 +188,4 @@ class UserVotesTest extends TestCase
 
         $this->assertEquals(100, $user->getVoteCredits());
     }
-
-
 }
